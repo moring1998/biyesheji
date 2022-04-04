@@ -62,11 +62,13 @@ public class chessOrgrid : MonoBehaviour
     
     private void GridOrChessBehavior(int itemColorID,int x,int y)
     {
+        gameManager.ClearCurrentCanEatUIStack();
         int FromX, FromY, ToX, ToY;
         switch (itemColorID)
         {
             //空格子
             case 0:
+                gameManager.ClearCurrentCanMoveUIStack();
                 //当前要去的位置
                 ToX = x;
                 ToY = y;
@@ -137,12 +139,16 @@ public class chessOrgrid : MonoBehaviour
 
            //黑色棋子
             case 1:
+                gameManager.ClearCurrentCanMoveUIStack();//清空上次的显示路径
                 //黑色轮次
-                if(!gameManager.chessMove)
+                if (!gameManager.chessMove)
                 {
                     FromX = x;
                     FromY = y;
                     //显示所有可以移动的路径
+                    gameManager.ClearCurrentCanMoveUIStack();//清空上次的显示路径
+                    gameManager.movingOfChess.ClickChess(FromX, FromY);//调用显示路径的方法
+
                     gameManager.LastChessOrGrid = this;
                     gameManager.ShowClickUI(transform);//显示当前选中棋子的UI（当前棋子的位置）
                 }
@@ -180,11 +186,14 @@ public class chessOrgrid : MonoBehaviour
 
             //白色棋子
             case 2:
+                gameManager.ClearCurrentCanMoveUIStack();//清空上次的显示路径
                 if (gameManager.chessMove)//当前是白色轮次
                 {
                     FromX = x;
                     FromY = y;
                     //显示所有可行路径
+                    gameManager.ClearCurrentCanMoveUIStack();//清空上次的显示路径
+                    gameManager.movingOfChess.ClickChess(FromX, FromY);//调用显示路径的方法
                     gameManager.LastChessOrGrid = this;
                     gameManager.ShowClickUI(transform);//显示当前选中棋子的UI（当前棋子的位置）
                 }

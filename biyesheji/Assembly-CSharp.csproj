@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="Assets\scripts\AudioManager.cs" />
     <Compile Include="Assets\scripts\CheckMate.cs" />
+    <Compile Include="Assets\scripts\ChessReseting.cs" />
     <Compile Include="Assets\scripts\GameManager.cs" />
     <Compile Include="Assets\scripts\MovingOfChess.cs" />
     <Compile Include="Assets\scripts\Rules.cs" />

@@ -54,6 +54,8 @@ public class GameManager : MonoBehaviour
     public GameObject canEatPosUIGo;//可以吃掉棋子的UI显示
     public Stack<GameObject> canMoveUIStack;//存储所有移动位置UI显示游戏物体的栈（总的
     public Stack<GameObject> currentCanMoveUIStack;//存储当前移动位置UI 已经显示 出来的游戏物体的栈（显示的
+    public Stack<GameObject> canEatUIStack;//存储所有移动位置UI显示游戏物体的栈（总的
+    public Stack<GameObject> currentCanEatUIStack;//存储当前移动位置UI 已经显示 出来的游戏物体的栈（显示的
     private void Awake()
     {
         instance = this;
@@ -109,12 +111,20 @@ public class GameManager : MonoBehaviour
         checkMate = new CheckMate();//将军检测对象
         //移动UI显示的栈
         canMoveUIStack = new Stack<GameObject>();
+        //吃子UI显示的栈
+        canEatUIStack = new Stack<GameObject>();
        //实例化四十个移动位置ui显示
         for(int i = 0; i < 40; i++)
         {
             canMoveUIStack.Push(Instantiate(canMovePosUIGo));
         }
-
+        //实例化十个可吃子位置显示
+        for (int j = 0; j < 10; j++)
+        {
+            canEatUIStack.Push(Instantiate(canEatPosUIGo));
+        }
+        currentCanEatUIStack = new Stack<GameObject>();//初始化吃子显示的栈
+        currentCanMoveUIStack = new Stack<GameObject>();//初始化移动显示的栈
 
     }
     ///<summary>
@@ -258,10 +268,31 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// 隐藏 可以吃掉该棋子 的UI显示
     /// </summary>
-    public void HideCanEatUI()
+    //public void HideCanEatUI()
+    //{
+    //    canEatPosUIGo.transform.SetParent(eatChessPool.transform);
+    //    canEatPosUIGo.transform.localPosition = Vector3.zero;
+    //}
+
+    public GameObject PopCanEatUI()//显示当前吃子位置UI
     {
-        canEatPosUIGo.transform.SetParent(eatChessPool.transform);
-        canEatPosUIGo.transform.localPosition = Vector3.zero;
+        GameObject itemGo = canEatUIStack.Pop();//出栈
+        currentCanEatUIStack.Push(itemGo);//将要显示的UI存放在当前栈中
+        itemGo.SetActive(true);//激活当前游戏物体
+        return itemGo;
+    }
+    public void PushCanEatUI(GameObject itemGo)//隐藏当前吃子位置UI
+    {
+        canEatUIStack.Push(itemGo);//入栈
+        itemGo.transform.SetParent(eatChessPool.transform);//设置父对象
+        itemGo.SetActive(false);
+    }
+    public void ClearCurrentCanEatUIStack()//清空当前显示ui
+    {
+        while (currentCanEatUIStack.Count > 0)//当前栈内count大于0则需要清空
+        {
+            PushCanEatUI(currentCanEatUIStack.Pop());//将currentcaneatuistack中的弹出的物体 存入canmoveuistack
+        }
     }
     /// <summary>
     /// 显示或者隐藏 当前选中棋子可以移动到的位置UI

@@ -26,6 +26,9 @@ public class Rules
         {
             return false;//当前是同一颜色棋子时，移动不合法
         }
+
+        Debug.Log("当前位置" + FromX+","+ FromY);
+        Debug.Log("结束位置" + ToX + "," + ToY);
         return IsValid(moveChessID, position, FromX, FromY, ToX, ToY);
         //return true;
     }
@@ -39,6 +42,7 @@ public class Rules
     {
         if (IsBlack(x)&&IsBlack(Y)||IsWrite(x)&&IsWrite(Y))
         {
+            
             return true;
         }
         else
@@ -99,11 +103,6 @@ public class Rules
         {
             //王的走棋规则：横直斜都可走但每次限制一步
             case 1://黑王 
-                if (Mathf.Abs(ToX-FromX)>1||Mathf.Abs(ToY-FromY)>1)//横纵移动超过一个单元格
-                {
-                    return false;
-                }
-                break;
             case 7://白王
                 if (Mathf.Abs(ToX - FromX) > 1 || Mathf.Abs(ToY - FromY) > 1)
                 {
@@ -112,45 +111,143 @@ public class Rules
                 break;
 
 
-            //兵的行走规则：只能往前直走，且走一格
-            case 6://黑兵 
-                if (!(ToX-FromX==1))//不是走一格
+            //兵的行走规则：只能往前直走，且走一格,斜前方一格有敌人可吃子
+            case 6://黑兵
+                    
+                    if (ToX-FromX!=1)//不是一格或者不是向前走
+                        {
+                            Debug.Log("不是向前一格");
+                            return false;                   
+                         }
+               
+                    if (position[FromX + 1, FromY] != 0)//前方有棋子，判断一哈斜方有无棋子
+                    {
+                        if (Mathf.Abs(FromX - ToX) == Mathf.Abs(FromY - ToY))//判断去的位置是斜前方一格
+                        {
+                            Debug.Log("斜方没有棋子，不能吃子");
+                            if (position[ToX, ToY] == 0)//如果没有棋子就不走
+                            {
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log("前方有棋子不能走");
+                            return false;
+                        }
+                    }
+                else
                 {
-                    return false;
-                }
-                if (FromX==ToX)//不是走竖线
-                {
-                    return false;
-                }
-                if (FromX>ToX)//不是向前走
-                {
-                    return false;
+                    if (Mathf.Abs(FromX - ToX) == Mathf.Abs(FromY - ToY))//判断去的位置是斜前方一格
+                    {
+                        Debug.Log("斜方没有棋子，不能走");
+                        if (position[ToX, ToY] == 0)//如果没有棋子就不走
+                        {
+                            return false;
+                        }
+                    }
                 }
                 break;
+                
+
+
+
+
             case 12://白兵
-                if (!(FromX - ToX == 1))//不是往前走一格
-                {
-                    return false;
+                    if (FromX - ToX!= 1)//不是往前走一格
+                        {
+                            Debug.Log("不是向前一格");
+                            return false;
+                        }
+                    if (position[FromX - 1, FromY] != 0)
+                    {
+                        if (Mathf.Abs(FromX - ToX) == Mathf.Abs(FromY - ToY))//判断去的位置是斜前方一格
+                        {
+                            Debug.Log("斜方没有棋子，不能吃子");
+                            if (position[ToX, ToY] == 0)//如果没有棋子就不走
+                            {
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log("前方有棋子不能走");
+                            return false;
+                        }
                 }
-                if (FromX == ToX)//不是走竖线
+                else
                 {
-                    return false;
+                    if (Mathf.Abs(FromX - ToX) == Mathf.Abs(FromY - ToY))//判断去的位置是斜前方一格
+                    {
+                        Debug.Log("斜方没有棋子，不能走");
+                        if (position[ToX, ToY] == 0)//如果没有棋子就不走
+                        {
+                            return false;
+                        }
+                    }
                 }
-                if (FromX<ToX)//不是向前走
-                {
-                    return false;
-                }
+
+
+
                 break;
 
 
-            //车的行走规则：横竖都可以走，步数不受限制，但不能斜走
+            //车的行走规则：横竖都可以走，步数不受限制，但不能斜走也不能越子
             case 8://白车
             case 2://黑车 
                 if (FromX!=ToX&&FromY!=ToY)//斜着走
                 {
                     return false;
                 }
-                break;
+                int a = 0, b = 0;
+                if (FromX == ToX)//走横线时
+                {
+                    if (FromY < ToY)//右走
+                    {
+                        //遍历移动路径上有无棋子，有则不能越子行走
+                        for (a = FromY + 1; a < ToY; a++)
+                        {
+                            if (position[FromX, a] != 0)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                    else//左走
+                    {
+                        for (a = ToY + 1; a < FromY; a++)
+                        {
+                            if (position[FromX, a] != 0)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+                if (FromY == ToY)//走竖线时
+                {
+                    if (FromX < ToX)//往下走
+                    {
+                        for (b = FromX + 1; b < ToX; b++)
+                        {
+                            if (position[b, FromY] != 0)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                    else //往上走
+                    {
+                        for (b = ToX + 1; b < FromX; b++)
+                        {
+                            if (position[b, FromY] != 0)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+                    break;
 
 
             //马的走棋规则：走日，可越子行走
@@ -167,12 +264,18 @@ public class Rules
             //王后的走棋规则：横直斜都可走不限步数，不可越子
             case 4://黑后
             case 10://白后
+                //横线，直线，斜线
+                if (FromX!=ToX&&FromY!=ToY&& Mathf.Abs(FromX - ToX) != Mathf.Abs(FromY - ToY))
+                {
+                    return false;
+                }
+                //int a = 0, b = 0;
                 if (FromX==ToX)//走横线时
                 {
                     if (FromY<ToY)//右走
                     { 
                         //遍历移动路径上有无棋子，有则不能越子行走
-                        for (int a = FromY+1; a < ToY; a++)
+                        for ( a = FromY+1; a < ToY; a++)
                         {
                             if (position[FromX,a]!=0)
                             {
@@ -182,7 +285,7 @@ public class Rules
                     }
                     else//左走
                     {
-                        for (int a = ToY+1; a < FromY; a++)
+                        for (a = ToY+1; a < FromY; a++)
                         {
                             if (position[FromX,a]!=0)
                             {
@@ -195,7 +298,7 @@ public class Rules
                 {
                     if (FromX < ToX)//往下走
                     {
-                        for (int b = FromX+1; b < ToX; b++)
+                        for ( b = FromX+1; b < ToX; b++)
                         {
                             if (position[b,FromY]!=0)
                             {
@@ -205,7 +308,7 @@ public class Rules
                     }
                     else //往上走
                     {
-                        for (int b = ToX+1; b < FromX; b++)
+                        for ( b = ToX+1; b < FromX; b++)
                         {
                             if (position[b,FromY]!=0)
                             {
@@ -216,66 +319,66 @@ public class Rules
                     
                 }
 
-                if (FromX != ToX && FromY!=ToY)//走斜线时
+                if (Mathf.Abs(FromX - ToX) == Mathf.Abs(FromY - ToY))//走斜线的时候
                 {
-                    //往下走的情况
-                    if (ToX>FromX)
+                    if (ToX > FromX && ToY > FromY)//右下的情况
                     {
-                        if (ToY>FromY)//右下的情况
+                        for (a = FromX + 1, b = FromY + 1; a < ToX && b < ToY; a++, b++)
                         {
-                            for (int a = FromX+1; a < ToX; a++)
+
+                            if (position[a, b] != 0)
                             {
-                                for (int b = FromY+1; b <ToY; b++)
-                                {
-                                    if (position[a,b]!=0)
-                                    {
-                                        return false;
-                                    }
-                                }
+                                Debug.Log("右下有棋子，过不了");
+                                return false;
                             }
-                        }
-                        else//左下的情况
-                        {
-                            for (int a = FromX + 1; a < ToX; a++)
-                            {
-                                for (int b = FromY - 1; b < ToY; b--)
-                                {
-                                    if (position[a, b] != 0)
-                                    {
-                                        return false;
-                                    }
-                                }
-                            }
+                            Debug.Log("右下");
+
                         }
                     }
-                    //往上走的情况
-                    if (FromX>ToX)
+
+                    if (ToX > FromX && ToY < FromY)//左下的情况
                     {
-                        if (ToY>FromY)//往右上走
+                        for (a = FromX + 1, b = FromY - 1; a <ToX && b > ToY; a++, b--)
                         {
-                            for (int a = FromX - 1; a < ToX; a--)
+
+                            if (position[a, b] != 0)
                             {
-                                for (int b = FromY + 1; b < ToY; b++)
-                                {
-                                    if (position[a, b] != 0)
-                                    {
-                                        return false;
-                                    }
-                                }
+                                Debug.Log("左下有棋子，过不了");
+                                return false;
                             }
+                            Debug.Log("左下");
+
                         }
-                        else//往左上走
+                    }
+
+
+                    if (FromX > ToX && ToY > FromY)//往右上走
+                    {
+                        for (a = FromX - 1, b = FromY + 1; a > ToX && b < ToY; a--, b++)
                         {
-                            for (int a = FromX - 1; a < ToX; a--)
+
+                            if (position[a, b] != 0)
                             {
-                                for (int b = FromY - 1; b < ToY; b--)
-                                {
-                                    if (position[a, b] != 0)
-                                    {
-                                        return false;
-                                    }
-                                }
+                                Debug.Log("右上有棋子，过不了");
+                                return false;
                             }
+                            Debug.Log("右上");
+
+                        }
+                    }
+
+                    if (FromX > ToX && ToY < FromY)//往左上
+                    {
+                        for (a = FromX - 1, b = FromY - 1; a > ToX && b > ToY; a--, b--)
+                        {
+
+                            if (position[a, b] != 0)
+                            {
+                                Debug.Log("左上有棋子，过不了");
+                                return false;
+                            }
+                            Debug.Log("左上");
+
                         }
                     }
                 }
@@ -285,71 +388,71 @@ public class Rules
             //象的走棋规则：只能斜走，步数不限，但不能越子
             case 5://黑象
             case 11://白象
-                if (ToX==FromX||ToY==FromY)//只能斜走
+                if (Mathf.Abs(FromX - ToX) !=  Mathf.Abs(FromY - ToY) )//只能斜走
                 {
                     return false;
                 }
                 //遍历斜走移动路径上有无棋子，有则不能越子行走
-                if (FromX != ToX && FromY != ToY)
+                if (Mathf.Abs(FromX - ToX) == Mathf.Abs(FromY - ToY))//走斜线的时候
                 {
-                    //往下走的情况
-                    if (ToX > FromX)
+                    if (ToX > FromX && ToY > FromY)//右下的情况
                     {
-                        if (ToY > FromY)//右下的情况
+                        for (a = FromX + 1, b = FromY + 1; a < ToX && b < ToY; a++, b++)
                         {
-                            for (int a = FromX + 1; a < ToX; a++)
+
+                            if (position[a, b] != 0)
                             {
-                                for (int b = FromY + 1; b < ToY; b++)
-                                {
-                                    if (position[a, b] != 0)
-                                    {
-                                        return false;
-                                    }
-                                }
+                                Debug.Log("右下有棋子，过不了");
+                                return false;
                             }
-                        }
-                        else//左下的情况
-                        {
-                            for (int a = FromX + 1; a < ToX; a++)
-                            {
-                                for (int b = FromY - 1; b < ToY; b--)
-                                {
-                                    if (position[a, b] != 0)
-                                    {
-                                        return false;
-                                    }
-                                }
-                            }
+                            Debug.Log("右下");
+
                         }
                     }
-                    //往上走的情况
-                    if (FromX > ToX)
+
+                    if (ToX > FromX && ToY < FromY)//左下的情况
                     {
-                        if (ToY > FromY)//往右上走
+                        for (a = FromX + 1, b = FromY - 1; a < ToX && b > ToY; a++, b--)
                         {
-                            for (int a = FromX - 1; a < ToX; a--)
+
+                            if (position[a, b] != 0)
                             {
-                                for (int b = FromY + 1; b < ToY; b++)
-                                {
-                                    if (position[a, b] != 0)
-                                    {
-                                        return false;
-                                    }
-                                }
+                                Debug.Log("左下有棋子，过不了");
+                                return false;
                             }
+                            Debug.Log("左下");
+
                         }
-                        else//往左上走
+                    }
+
+
+                    if (FromX > ToX && ToY > FromY)//往右上走
+                    {
+                        for (a = FromX - 1, b = FromY + 1; a > ToX && b < ToY; a--, b++)
                         {
-                            for (int a = FromX - 1; a < ToX; a--)
+
+                            if (position[a, b] != 0)
                             {
-                                for (int b = FromY - 1; b < ToY; b--)
-                                {
-                                    if (position[a, b] != 0)
-                                    {
-                                        return false;
-                                    }
-                                }
+                                Debug.Log("右上有棋子，过不了");
+                                return false;
                             }
+                            Debug.Log("右上");
+
+                        }
+                    }
+
+                    if (FromX > ToX && ToY < FromY)//往左上
+                    {
+                        for (a = FromX - 1, b = FromY - 1; a > ToX && b > ToY; a--, b--)
+                        {
+
+                            if (position[a, b] != 0)
+                            {
+                                Debug.Log("左上有棋子，过不了");
+                                return false;
+                            }
+                            Debug.Log("左上");
+
                         }
                     }
                 }
