@@ -1855,9 +1855,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   panels:
-  - {fileID: 1274933158}
   - {fileID: 182967836}
   - {fileID: 803434044}
+  - {fileID: 1274933158}
   - {fileID: 1631562644}
   TipUIText: {fileID: 0}
   TipUITexts:

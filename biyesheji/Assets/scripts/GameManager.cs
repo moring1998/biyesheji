@@ -48,6 +48,7 @@ public class GameManager : MonoBehaviour
     public Rules rules; //规则类
     public MovingOfChess movingOfChess;//移动类
     public CheckMate checkMate;//将军类
+    public ChessReseting chessReseting;//悔棋类
     public GameObject eatChessPool;//被吃掉的棋子存放池
     public GameObject clickChessUIGo;//选中棋子的UI显示
     public GameObject lastPosUIGo;//棋子移动前位置UI的显示
@@ -125,6 +126,10 @@ public class GameManager : MonoBehaviour
         }
         currentCanEatUIStack = new Stack<GameObject>();//初始化吃子显示的栈
         currentCanMoveUIStack = new Stack<GameObject>();//初始化移动显示的栈
+        //悔棋类对象
+        chessReseting = new ChessReseting();
+        chessReseting.resetCount = 0;
+        chessReseting.chessSteps = new ChessReseting.Chess[400];
 
     }
     ///<summary>
@@ -236,6 +241,22 @@ public class GameManager : MonoBehaviour
         itemGo.transform.SetParent(eatChessPool.transform);
         itemGo.transform.localPosition = Vector3.zero;
     }
+
+    /// <summary>
+    /// 单机重玩方法
+    /// </summary>
+    public void Replay()
+    {
+        HideClickUI();
+        HideLastPositionUI();
+        ClearCurrentCanEatUIStack();
+        ClearCurrentCanMoveUIStack();
+        LastChessOrGrid = null;
+        for (int i = chessReseting.resetCount; i>0; i--)
+        {
+            chessReseting.ResetChess();
+        }
+    }
     #region 关于游戏进行中UI的显示隐藏方法
      /// <summary>
      /// 显示或隐藏 点击选中棋子 的UI
@@ -262,7 +283,7 @@ public class GameManager : MonoBehaviour
     }
     public void HideLastPositionUI()
     {
-        lastPosUIGo.transform.position = new Vector3(100, 100, 100);//放到看不见的位置相当于隐藏
+        lastPosUIGo.transform.localPosition = new Vector3(100, 100, 100);//放到看不见的位置相当于隐藏
     }
 
     /// <summary>

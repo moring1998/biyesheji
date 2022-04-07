@@ -98,6 +98,10 @@ public class chessOrgrid : MonoBehaviour
                     {
                         return;
                     }
+                    //获取到棋子ID，将移动添加到列表了
+                    int chessOneID = gameManager.chesssBoard[FromX, FromY];
+                    int chessTwoID = gameManager.chesssBoard[ToX, ToY];
+                    gameManager.chessReseting.AddChess(gameManager.chessReseting.resetCount, FromX, FromY, ToX, ToY,chessOneID,chessTwoID);
                     //棋子进行移动 
                     gameManager.movingOfChess.IsMove(gameManager.LastChessOrGrid.gameObject,gridGo,FromX,FromY,ToX,ToY);
                     UIManager.Instance.ShowTip("黑方走");//UI改变
@@ -126,6 +130,11 @@ public class chessOrgrid : MonoBehaviour
                     {
                         return;
                     }
+                    //获取到棋子ID，将移动添加到列表了
+                    int chessOneID = gameManager.chesssBoard[FromX, FromY];
+                    int chessTwoID = gameManager.chesssBoard[ToX, ToY];
+                    gameManager.chessReseting.AddChess(gameManager.chessReseting.resetCount, FromX, FromY, ToX, ToY, chessOneID, chessTwoID);
+                    //棋子进行移动
                     gameManager.movingOfChess.IsMove(gameManager.LastChessOrGrid.gameObject, gridGo, FromX, FromY, ToX, ToY);
                     UIManager.Instance.ShowTip("白方走");//UI改变
                     gameManager.checkMate.JudgeIfCheckmate();//检测是否将军
@@ -148,7 +157,6 @@ public class chessOrgrid : MonoBehaviour
                     //显示所有可以移动的路径
                     gameManager.ClearCurrentCanMoveUIStack();//清空上次的显示路径
                     gameManager.movingOfChess.ClickChess(FromX, FromY);//调用显示路径的方法
-
                     gameManager.LastChessOrGrid = this;
                     gameManager.ShowClickUI(transform);//显示当前选中棋子的UI（当前棋子的位置）
                 }
@@ -174,6 +182,10 @@ public class chessOrgrid : MonoBehaviour
                     {
                         return;
                     }
+                    //获取到棋子ID，将移动添加到列表了
+                    int chessOneID = gameManager.chesssBoard[FromX, FromY];
+                    int chessTwoID = gameManager.chesssBoard[ToX, ToY];
+                    gameManager.chessReseting.AddChess(gameManager.chessReseting.resetCount, FromX, FromY, ToX, ToY, chessOneID, chessTwoID);
                     gameManager.movingOfChess.IsEat(gameManager.LastChessOrGrid.gameObject, gameObject, FromX, FromY, ToX, ToY);
                     gameManager.chessMove = false;//吃子完成后为黑色轮次
                     UIManager.Instance.ShowTip("黑色走");
@@ -218,6 +230,10 @@ public class chessOrgrid : MonoBehaviour
                     {
                         return;
                     }
+                    //获取到棋子ID，将移动添加到列表了
+                    int chessOneID = gameManager.chesssBoard[FromX, FromY];
+                    int chessTwoID = gameManager.chesssBoard[ToX, ToY];
+                    gameManager.chessReseting.AddChess(gameManager.chessReseting.resetCount, FromX, FromY, ToX, ToY, chessOneID, chessTwoID);
                     gameManager.movingOfChess.IsEat(gameManager.LastChessOrGrid.gameObject, gameObject, FromX, FromY, ToX, ToY);
                     gameManager.chessMove = true;
                     UIManager.Instance.ShowTip("白棋走");

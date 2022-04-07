@@ -12,7 +12,7 @@ public class UIManager : MonoBehaviour
     {
         get;private set;
     }
-    public GameObject[] panels;//0.登录界面  1.主菜单  2.单机模式游戏界面  3.联网模式游戏界面 
+    public GameObject[] panels;//  0.主菜单  1.单机模式游戏界面 2.登录界面 3.联网模式游戏界面 
     public Text TipUIText;//当前需要改变具体文本的显示UI
     public Text[] TipUITexts;//两个对应显示UI的引用
     private GameManager gameManager;
@@ -38,8 +38,10 @@ public class UIManager : MonoBehaviour
     /// 单机模式
     /// </summary>
     public void standaloneMode()
-    {
-        LoadGame();
+    {   LoadGame();
+        //panels[0].SetActive(false);
+        //panels[1].SetActive(true);
+        
     }
 
     /// <summary>
@@ -47,9 +49,15 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void NetWorkingMode()
     {
-        panels[1].SetActive(false);
-        panels[3].SetActive(true);
+        panels[0].SetActive(false);
+        panels[2].SetActive(true);
     }
+
+    //public void networking()
+    //{
+    //    panels[2].SetActive(false);
+    //    panels[3].SetActive(true);
+    //}
 
     /// <summary>
     ///  退出游戏
@@ -65,12 +73,13 @@ public class UIManager : MonoBehaviour
     {
         gameManager.ResetGame();
         SetUI();
-        panels[2].SetActive(true);
+        panels[1].SetActive(true);
+        panels[0].SetActive(false);
     }
 
     public void SetUI()
     {
-        panels[1].SetActive(true);
+        panels[0].SetActive(true);
     }
     #endregion
 
@@ -80,21 +89,23 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void UnDo()
     {
-
+        gameManager.chessReseting.ResetChess();
     }
     /// <summary>
     /// 重玩
     /// </summary>
     public void Replay()
     {
-
+        gameManager.Replay();
     }
     /// <summary>
     /// 返回
     /// </summary>
     public void ReturnToMain()
     {
-
+        panels[1].SetActive(false);
+        gameManager.Replay();
+        gameManager.gameOver = true;
     }
     /// <summary>
     /// 下棋轮次及提示
