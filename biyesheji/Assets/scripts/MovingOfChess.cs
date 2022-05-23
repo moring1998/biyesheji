@@ -26,6 +26,7 @@ public class MovingOfChess //不需要挂载在游戏物体上，不必继承Mon
     /// <param name="y2">Y索引</param>
    public void IsMove(GameObject chessGo,GameObject targetGrid,int x1,int y1,int x2,int y2)
     {
+        AudioManager.Instance.PlaySound(1);
         gameManager.ShowLastPositionUI(chessGo.transform.position);
         chessGo.transform.SetParent(targetGrid.transform);//将格子设为棋子的父对象
         chessGo.transform.localPosition = Vector3.zero;//棋子自身位置重置
@@ -45,6 +46,7 @@ public class MovingOfChess //不需要挂载在游戏物体上，不必继承Mon
     /// <param name="y2"></param>
     public void IsEat(GameObject firstChess,GameObject secondChess, int x1, int y1, int x2, int y2)
     {
+        AudioManager.Instance.PlaySound(2);
         gameManager.ShowLastPositionUI(firstChess.transform.position);//显示棋子移动前的位置
         GameObject secendChessGrid = secondChess.transform.parent.gameObject;//得到第二个棋子的父对象
         firstChess.transform.SetParent(secendChessGrid.transform);

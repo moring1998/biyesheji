@@ -136,7 +136,7 @@ public class Rules
                             return false;
                         }
                     }
-                else
+                else//前方可以移动的情况下判断斜方
                 {
                     if (Mathf.Abs(FromX - ToX) == Mathf.Abs(FromY - ToY))//判断去的位置是斜前方一格
                     {

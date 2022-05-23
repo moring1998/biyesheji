@@ -11,6 +11,9 @@ public class AudioManager : MonoBehaviour
     {
         get;private set;
     }
+    public AudioSource audioSource;
+    public AudioClip[] audioclips;//特效音
+    public AudioClip[] audioBGClips;//背景音
     // Start is called before the first frame update
     void Start()
     {
@@ -21,5 +24,28 @@ public class AudioManager : MonoBehaviour
     void Update()
     {
         
+    }
+    /// <summary>
+    /// 播放特效音
+    /// </summary>
+    /// <param name="soundIndex"></param>
+    public void PlaySound(int soundIndex)
+    {
+        audioSource.PlayOneShot(audioclips[soundIndex]);
+    }
+    /// <summary>
+    /// 播放背景音乐
+    /// </summary>
+    /// <param name="soundIndex"></param>
+    public void ChangeBGM(int soundIndex)
+    {
+        audioSource.Stop();
+        audioSource.clip = audioBGClips[soundIndex];
+        audioSource.Play();
+    }
+    public void CloseBGM()
+    {
+        audioSource.Stop();
+        //audioSource.Play();
     }
 }

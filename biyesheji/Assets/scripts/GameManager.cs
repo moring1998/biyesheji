@@ -12,14 +12,14 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance {get; private set; }
 
-    public int ChessPeople;//对战人数，单机模式1 联网模式2；
+    public int ChessPeople;//对战人数，中国风1 卡通风2 拟人风3 ；
     /// <summary>
     /// 数据
     /// </summary>
     public int[,] chesssBoard;//当前棋盘的状况
     public GameObject[,] boardGrid;//棋盘上所有格子
-    private const int gridWidth = 80;//格子宽
-    private const int gridHeight = 80;//格子高
+    private const float gridWidth = 77;//格子宽
+    private const int gridHeight = 77;//格子高
     private const int gridTotalNum = 64;//棋盘上格子数
 
     /// <summary>
@@ -27,13 +27,18 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public bool chessMove;//该哪方移动，白棋是true黑是false
     public bool gameOver;//游戏结束不能移动
-
+    public bool hasLoad;//当前游戏是否已经加载
+    //当前棋盘是否加载的开关
+    public bool KTModeHasLoad;
+    public bool NRModeHasLoad;
 
     /// <summary>
     /// 资源
     /// </summary>
     public GameObject gridGo;//格子
-    public Sprite[] sprites;//所有棋子的sprite
+    public Sprite[] sprites;//中国风所有棋子的sprite
+    public Sprite[] sprites1;//卡通风所以棋子的sprite
+    public Sprite[] sprites2;//拟人风所以棋子的sprite
     public GameObject chessGo;//棋子
     public GameObject canMovePosUIGo;//可以移动到的位置UI显示
 
@@ -42,7 +47,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public GameObject boardGo;//棋盘
-    public GameObject[] boardGos;//0单机 1联网
+    public GameObject[] boardGos;//0中国风 1卡通风 2拟人风 
     [HideInInspector]
     public chessOrgrid LastChessOrGrid;//上次点击到的对象（棋子或者格子）
     public Rules rules; //规则类
@@ -60,13 +65,14 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        gameOver = true;
     }
     // Start is called before the first frame update
     void Start()
     {
         //仅做测试
-        ChessPeople=1;
-        ResetGame();
+        //ChessPeople=1;
+        //ResetGame();
     }
 
     // Update is called once per frame
@@ -80,9 +86,14 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ResetGame()
     {
+        gameOver = false;
+        chessMove = true;
+        //if (hasLoad)
+        //{
+        //    return;
+        //}
         //初始化棋盘
         //棋子编号为1黑王  2黑车 3黑马 4黑后 5黑象 6黑兵 7白王 8白车 9白马 10白后 11白象 12白兵 
-        chessMove = true;
         chesssBoard = new int[8, 8]
         {
             {2, 3, 5, 4, 1,5,3,2 },
@@ -96,15 +107,7 @@ public class GameManager : MonoBehaviour
         };
         //初始化格子
         boardGrid = new GameObject[8, 8];
-
-        if(ChessPeople == 1)
-        {
-            boardGo = boardGos[0];
-        }
-        else
-        {
-            boardGo = boardGos[1];
-        }
+        boardGo = boardGos[0];
         InitGrid();
         InitChess();
         rules = new Rules();//实例化出rules类对象
@@ -130,6 +133,133 @@ public class GameManager : MonoBehaviour
         chessReseting = new ChessReseting();
         chessReseting.resetCount = 0;
         chessReseting.chessSteps = new ChessReseting.Chess[400];
+        //已经加载过游戏了
+       
+        //hasLoad = true;
+      
+       
+
+    }
+
+
+    /// <summary>
+    /// 卡通风
+    /// </summary>
+    public void ResetGame1()
+    {
+        gameOver = false;
+        chessMove = true;
+        //if (KTModeHasLoad)
+        //{
+        //    return;
+        //}
+        //初始化棋盘
+        //棋子编号为1黑王  2黑车 3黑马 4黑后 5黑象 6黑兵 7白王 8白车 9白马 10白后 11白象 12白兵 
+        chesssBoard = new int[8, 8]
+        {
+            {2, 3, 5, 4, 1,5,3,2 },
+            {6,6,6,6,6,6,6,6},
+            {0,0,0,0,0,0,0,0 },
+            {0,0,0,0,0,0,0,0 },
+            {0,0,0,0,0,0,0,0 },
+            {0,0,0,0,0,0,0,0 },
+            {12,12,12,12,12,12,12,12},
+            {8,9,11,10,7,11,9,8 }
+        };
+        //初始化格子
+        boardGrid = new GameObject[8, 8];
+        boardGo = boardGos[1];
+        InitGrid();
+        InitChess1();
+        rules = new Rules();//实例化出rules类对象
+        movingOfChess = new MovingOfChess(this);//移动类对象
+        checkMate = new CheckMate();//将军检测对象
+        //移动UI显示的栈
+        canMoveUIStack = new Stack<GameObject>();
+        //吃子UI显示的栈
+        canEatUIStack = new Stack<GameObject>();
+        //实例化四十个移动位置ui显示
+        for (int i = 0; i < 40; i++)
+        {
+            canMoveUIStack.Push(Instantiate(canMovePosUIGo));
+        }
+        //实例化十个可吃子位置显示
+        for (int j = 0; j < 10; j++)
+        {
+            canEatUIStack.Push(Instantiate(canEatPosUIGo));
+        }
+        currentCanEatUIStack = new Stack<GameObject>();//初始化吃子显示的栈
+        currentCanMoveUIStack = new Stack<GameObject>();//初始化移动显示的栈
+        //悔棋类对象
+        chessReseting = new ChessReseting();
+        chessReseting.resetCount = 0;
+        chessReseting.chessSteps = new ChessReseting.Chess[400];
+   
+            //KTModeHasLoad = true;
+       
+
+
+    }
+
+    /// <summary>
+    /// 拟人风
+    /// </summary>
+    public void ResetGame2()
+    {
+        gameOver = false;
+        chessMove = true;
+       
+        //if (NRModeHasLoad)
+        //{
+        //    return;
+        //}
+     
+
+        //初始化棋盘
+        //棋子编号为1黑王  2黑车 3黑马 4黑后 5黑象 6黑兵 7白王 8白车 9白马 10白后 11白象 12白兵 
+        chesssBoard = new int[8, 8]
+        {
+            {2, 3, 5, 4, 1,5,3,2 },
+            {6,6,6,6,6,6,6,6},
+            {0,0,0,0,0,0,0,0 },
+            {0,0,0,0,0,0,0,0 },
+            {0,0,0,0,0,0,0,0 },
+            {0,0,0,0,0,0,0,0 },
+            {12,12,12,12,12,12,12,12},
+            {8,9,11,10,7,11,9,8 }
+        };
+        //初始化格子
+        boardGrid = new GameObject[8, 8];
+        boardGo = boardGos[2];
+        InitGrid();
+        InitChess2();
+        rules = new Rules();//实例化出rules类对象
+        movingOfChess = new MovingOfChess(this);//移动类对象
+        checkMate = new CheckMate();//将军检测对象
+        //移动UI显示的栈
+        canMoveUIStack = new Stack<GameObject>();
+        //吃子UI显示的栈
+        canEatUIStack = new Stack<GameObject>();
+        //实例化四十个移动位置ui显示
+        for (int i = 0; i < 40; i++)
+        {
+            canMoveUIStack.Push(Instantiate(canMovePosUIGo));
+        }
+        //实例化十个可吃子位置显示
+        for (int j = 0; j < 10; j++)
+        {
+            canEatUIStack.Push(Instantiate(canEatPosUIGo));
+        }
+        currentCanEatUIStack = new Stack<GameObject>();//初始化吃子显示的栈
+        currentCanMoveUIStack = new Stack<GameObject>();//初始化移动显示的栈
+        //悔棋类对象
+        chessReseting = new ChessReseting();
+        chessReseting.resetCount = 0;
+        chessReseting.chessSteps = new ChessReseting.Chess[400];
+      
+            //NRModeHasLoad = true;
+      
+        
 
     }
     ///<summary>
@@ -159,9 +289,11 @@ public class GameManager : MonoBehaviour
                 
             }
         }
-    } 
+    }
+
+    #region 动态生成三种棋子
     /// <summary>
-    /// 实例化棋子
+    /// 实例化中国棋子
     /// </summary>
     private void InitChess()
     {
@@ -214,6 +346,117 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    /// <summary>
+    /// 实例化卡通风棋子
+    /// </summary>
+    private void InitChess1()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                GameObject item = boardGrid[i, j];//获取游戏物体
+                switch (chesssBoard[i, j])//根据相应的参数调用对应的事件
+                {
+                    case 1:
+                        CreateChess(item, "b_wang", sprites1[0], false);
+                        break;
+                    case 2:
+                        CreateChess(item, "b_che", sprites1[1], false);
+                        break;
+                    case 3:
+                        CreateChess(item, "b_ma", sprites1[2], false);
+                        break;
+                    case 4:
+                        CreateChess(item, "b_hou", sprites1[3], false);
+                        break;
+                    case 5:
+                        CreateChess(item, "b_xiang", sprites1[4], false);
+                        break;
+                    case 6:
+                        CreateChess(item, "b_bing", sprites1[5], false);
+                        break;
+                    case 7:
+                        CreateChess(item, "w_wang", sprites1[6], true);
+                        break;
+                    case 8:
+                        CreateChess(item, "w_che", sprites1[7], true);
+                        break;
+                    case 9:
+                        CreateChess(item, "w_ma", sprites1[8], true);
+                        break;
+                    case 10:
+                        CreateChess(item, "w_hou", sprites1[9], true);
+                        break;
+                    case 11:
+                        CreateChess(item, "w_xaing", sprites1[10], true);
+                        break;
+                    case 12:
+                        CreateChess(item, "w_bing", sprites1[11], true);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// 实例化拟人风棋子
+    /// </summary>
+    private void InitChess2()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                GameObject item = boardGrid[i, j];//获取游戏物体
+                switch (chesssBoard[i, j])//根据相应的参数调用对应的事件
+                {
+                    case 1:
+                        CreateChess(item, "b_wang", sprites2[0], false);
+                        break;
+                    case 2:
+                        CreateChess(item, "b_che", sprites2[1], false);
+                        break;
+                    case 3:
+                        CreateChess(item, "b_ma", sprites2[2], false);
+                        break;
+                    case 4:
+                        CreateChess(item, "b_hou", sprites2[3], false);
+                        break;
+                    case 5:
+                        CreateChess(item, "b_xiang", sprites2[4], false);
+                        break;
+                    case 6:
+                        CreateChess(item, "b_bing", sprites2[5], false);
+                        break;
+                    case 7:
+                        CreateChess(item, "w_wang", sprites2[6], true);
+                        break;
+                    case 8:
+                        CreateChess(item, "w_che", sprites2[7], true);
+                        break;
+                    case 9:
+                        CreateChess(item, "w_ma", sprites2[8], true);
+                        break;
+                    case 10:
+                        CreateChess(item, "w_hou", sprites2[9], true);
+                        break;
+                    case 11:
+                        CreateChess(item, "w_xaing", sprites2[10], true);
+                        break;
+                    case 12:
+                        CreateChess(item, "w_bing", sprites2[11], true);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+    #endregion
+
+
     /// <summary>
     /// 生成棋子游戏物体
     /// </summary>

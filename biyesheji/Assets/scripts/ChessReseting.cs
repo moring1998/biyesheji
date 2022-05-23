@@ -45,13 +45,13 @@ public class ChessReseting
         gameManager.HideLastPositionUI();
         gameManager.HideClickUI();
         
-       if (gameManager.ChessPeople==1)
+       if (gameManager.ChessPeople==1|| gameManager.ChessPeople == 2|| gameManager.ChessPeople == 3)
         {
             if (resetCount<=0)//没有走过棋，不能悔棋
             {
                 return;
             }
-            int f = resetCount - 1;//得到这一步棋
+            int f = resetCount - 1;//当前的步数。得到这一步棋
             int oneID = chessSteps[f].chessOneID;//棋子原来位置的ID
             int twoID = chessSteps[f].chessTwoID;//棋子移动到的位置ID
             GameObject gridOne, gridTwo, chessOne, chessTwo;
@@ -74,7 +74,6 @@ public class ChessReseting
             //移动的情况
             else
             {
-                
                 chessOne.transform.SetParent(gridOne.transform);
                 chessOne.transform.localPosition = Vector3.zero;
                 //将ID更新
@@ -95,7 +94,7 @@ public class ChessReseting
                 gameManager.chessMove = false;
             }
             resetCount--;
-            chessSteps[f] = new Chess();
+            chessSteps[f] = new Chess();//清空之前结构体数组
         }  
 
     }
